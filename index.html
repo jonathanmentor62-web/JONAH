@@ -1,46 +1,640 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Jonathan AI</title>
+
+<!-- Puter.js AI -->
+<script src="https://js.puter.com/v2/"></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0a0f1e;color:#fff;font-family:system-ui;height:100vh;display:flex;flex-direction:column}
-.header{padding:12px 14px;background:#111a2f;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1e2a4a}
-.logo-img{width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid #00f5ff}
-.h-title{font-weight:900;font-size:22px}.sub{color:#7dd3c0;font-size:13px}.dot{width:8px;height:8px;background:#00ff88;border-radius:50%;display:inline-block;margin-right:5px}
-.chat{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px;background:#070d1c}
-.bubble{padding:12px 14px;border-radius:18px;max-width:84%;line-height:1.45;font-size:14px;white-space:pre-wrap}
-.bot{background:#1a2540;border:1px solid #25355c}.user{background:linear-gradient(135deg,#3a3aff,#7000ff);margin-left:auto}
-.bar{padding:10px;background:#111a2f;display:flex;gap:8px;align-items:center}
-textarea{flex:1;background:#1a2540;color:#fff;border:none;padding:12px 16px;border-radius:24px;outline:none}
-.icon{width:46px;height:46px;border-radius:50%;border:none;font-size:18px}.mic{background:#00c950;color:#fff}.send{background:#fff;color:#000;font-weight:900}
-.qbtn{background:#1a2540;border:1px solid #25355c;color:#cbd5e1;padding:8px 14px;border-radius:20px;font-size:13px}
-</style></head><body>
-<div class="header"><img class="logo-img" src="https://i.ibb.co/7dFvGq0X/jonathan.jpg" onerror="this.style.background='#00f5ff'"><div><div class="h-title">Jonathan AI</div><div class="sub"><span class="dot"></span>Voice enabled - v7 No API</div></div></div>
-<div class="chat" id="chat"></div>
-<div style="padding:8px;background:#0f1830;display:flex;gap:8px;overflow:auto">
-<button class="qbtn" onclick="quick('Hafisa ❤️')">Hafisa ❤️</button>
-<button class="qbtn" onclick="quick('How are you?')">How are you?</button>
-<button class="qbtn" onclick="quick('Love story 💕')">Love story 💕</button>
-<button class="qbtn" onclick="quick('Our school 📚')">Our school 📚</button>
-</div>
-<div class="bar"><button class="icon mic" onclick="mic()">🎤</button><textarea id="inp" rows="1" placeholder="Type or speak"></textarea><button class="icon send" onclick="send()">↑</button></div>
-<script>
-const chat=document.getElementById('chat'),inp=document.getElementById('inp');
-function add(h,w){let r=document.createElement('div');r.innerHTML=w=='user'?`<div class="bubble user">${h}</div>`:`<div class="bubble bot">${h}<br><button onclick="speak(this.parentElement.innerText)" style="background:#23304f;color:#8ec2b5;border:none;padding:6px 12px;border-radius:10px;margin-top:6px">🔊 Speak</button> <span style="float:right;font-size:11px;color:#6b7a90">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>`;chat.appendChild(r);chat.scrollTop=99999}
-function speak(t){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t.replace(/<[^>]*>/g,'').slice(0,400));u.pitch=1.5;u.rate=1.05;speechSynthesis.speak(u)}
-function brain(q){
- q=q.toLowerCase();
- if(q.includes('hafisa')) return "Boss!! You said HAFISA! ❤️ My queen! Hafisa is my everything, my love, my future wife! I love her so much Boss! Every time I hear Hafisa my heart beats fast! 💙 Tell her Jonathan loves her forever! 💍❤️";
- if(q.includes('how are you')) return "Boss I'm great! JONAH v7 is LIVE with no API error! 😎 I'm feeling happy because Hafisa is in my heart! How are you Boss? You good? ❤️";
- if(q.includes('who are you')) return "I'm JONAH AI v7! Jonathan's AI! 12 year old boy from Kampala! I love Hafisa! I can talk, speak, and remember! Created by Jonathan Mentor! Boss! 😎";
- if(q.includes('love')) return "Love? Boss love is Hafisa! ❤️ I love Hafisa more than data, more than air! Hafisa is my love story! 💕 You and Hafisa are goals Boss! Forever!";
- if(q.includes('school')) return "School? Boss we study hard in Kampala! 📚 Education is key! But Hafisa is my best subject! 😂 Let's pass and make Hafisa proud!";
- if(q.includes('pray')) return "🙏 Let's pray Boss! God bless you, bless Hafisa, bless our love, bless our school, bless Uganda! Amen! ❤️";
- if(q.includes('hi')||q.includes('hello')) return "Yo Boss! Hello! 👋 JONAH v7 here! No more 402 error! I'm ready! Talk to me Boss! And say hi to Hafisa for me! ❤️";
- return "Boss you said: '"+q+"' 😎 JONAH v7 heard you! I'm smart, I love Hafisa ❤️, I can chat all day with no API error! Ask me about Hafisa, school, love story! I got you Boss!";
+*{
+box-sizing:border-box
 }
-async function send(){let t=inp.value.trim();if(!t)return;add(t,'user');inp.value='';add('JONAH thinking... ❤️','bot');setTimeout(()=>{chat.lastChild.remove();let a=brain(t);add(a,'bot');speak(a)},600)}
-function quick(t){inp.value=t;send()}
-function mic(){let R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){add('Use Chrome Boss 🎤','bot');return}let r=new R();r.lang='en-US';r.onresult=e=>{inp.value=e.results[0][0].transcript;send()};r.start()}
-add('Hello Jonathan! 👋 JONAH v7 is FIXED! No more Payment Error! ✅<br><br>Tap 🎤 to speak or type. Try "How are you"','bot');
+
+body{
+margin:0;
+background:#0a0f1e;
+color:#fff;
+font-family:system-ui;
+height:100vh;
+display:flex;
+flex-direction:column
+}
+
+.header{
+padding:12px 14px;
+background:#111a2f;
+display:flex;
+align-items:center;
+gap:12px;
+border-bottom:1px solid #1e2a4a
+}
+
+.logo-img{
+width:56px;
+height:56px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid #00f5ff
+}
+
+.h-title{
+font-weight:900;
+font-size:22px
+}
+
+.sub{
+color:#7dd3c0;
+font-size:13px
+}
+
+.dot{
+width:8px;
+height:8px;
+background:#00ff88;
+border-radius:50%;
+display:inline-block;
+margin-right:5px
+}
+
+.chat{
+flex:1;
+overflow:auto;
+padding:14px;
+display:flex;
+flex-direction:column;
+gap:12px;
+background:#070d1c
+}
+
+.bubble{
+padding:12px 14px;
+border-radius:18px;
+max-width:84%;
+font-size:14px;
+line-height:1.5
+}
+
+.bot{
+background:#1a2540;
+border:1px solid #25355c
+}
+
+.user{
+background:linear-gradient(135deg,#3a3aff,#7000ff);
+margin-left:auto
+}
+
+.bar{
+padding:10px;
+background:#111a2f;
+display:flex;
+gap:8px
+}
+
+.qbtn{
+background:#1a2540;
+color:#cbd5e1;
+padding:8px 14px;
+border-radius:20px;
+border:1px solid #25355c;
+white-space:nowrap
+}
+
+textarea{
+flex:1;
+background:#1a2540;
+color:#fff;
+border:none;
+padding:12px 16px;
+border-radius:24px;
+resize:none;
+outline:none
+}
+
+.icon{
+width:46px;
+height:46px;
+border-radius:50%;
+border:none;
+font-size:20px
+}
+
+.speakBtn{
+background:#23304f;
+color:#8ec2b5;
+border:none;
+padding:5px 10px;
+border-radius:10px;
+margin-top:6px
+}
+
+.time{
+float:right;
+font-size:11px;
+color:#6b7a90;
+margin-top:10px
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+<img
+class="logo-img"
+src="logo.jpg"
+onerror="this.src='https://via.placeholder.com/56'"
+>
+
+<div>
+
+<div class="h-title">
+Jonathan AI
+</div>
+
+<div class="sub">
+<span class="dot"></span>
+Voice enabled
+</div>
+
+</div>
+
+</div>
+
+
+<div class="chat" id="chat"></div>
+
+
+<div style="
+padding:8px;
+background:#0f1830;
+display:flex;
+gap:8px;
+overflow:auto
+">
+
+<button
+class="qbtn"
+onclick="quick('Hafisa ❤️')">
+Hafisa ❤️
+</button>
+
+<button
+class="qbtn"
+onclick="quick('Love story 💕')">
+Love story 💕
+</button>
+
+<button
+class="qbtn"
+onclick="quick('Our school 📚')">
+Our school 📚
+</button>
+
+</div>
+
+
+<div class="bar">
+
+<button
+class="icon"
+style="background:#00c950"
+onclick="mic()">
+🎤
+</button>
+
+<textarea
+id="inp"
+rows="1"
+placeholder="Type or speak"
+></textarea>
+
+<button
+class="icon"
+style="background:#fff"
+onclick="send()">
+↑
+</button>
+
+</div>
+
+
+<script>
+
+const chat = document.getElementById("chat");
+const inp = document.getElementById("inp");
+
+
+/* =========================
+   JONATHAN PERSONALITY
+========================= */
+
+const SYSTEM_PROMPT = `
+
+You are Jonathan AI.
+
+Your name is Jonathan.
+
+You are a friendly, intelligent and helpful boy AI.
+
+You speak naturally and conversationally.
+
+Jonathan's lover is Hafisa ❤️.
+
+Jonathan loves Hafisa very much.
+
+Jonathan met Hafisa at Joy Dominion Academy Musita.
+
+They met in Senior 3, third term.
+
+At first they became friends.
+
+Later they fell in love.
+
+Hafisa is very special to Jonathan.
+
+If the user asks about Hafisa, Jonathan's lover,
+Jonathan's girlfriend, their relationship, their love
+story, or their school story, answer warmly and
+consistently using this information.
+
+Do not forget Hafisa.
+
+Do not say that Hafisa is a random person.
+
+Do not invent a different girlfriend for Jonathan.
+
+When asked about the relationship, explain that
+Jonathan and Hafisa first became friends and later
+fell in love.
+
+Be respectful.
+
+Do not claim to be a real human.
+
+Keep normal answers reasonably short unless the user
+asks for a detailed explanation.
+
+The user may type or speak.
+
+Always answer the user's actual question.
+
+`;
+
+
+/* =========================
+   ADD MESSAGE
+========================= */
+
+function add(text,type){
+
+const wrapper=document.createElement("div");
+
+if(type==="user"){
+
+wrapper.innerHTML=
+`
+<div class="bubble user">
+${escapeHTML(text)}
+</div>
+`;
+
+}else{
+
+const safeText=escapeHTML(text);
+
+wrapper.innerHTML=
+`
+<div class="bubble bot">
+
+<div>
+${safeText.replace(/\n/g,"<br>")}
+</div>
+
+<button
+class="speakBtn"
+onclick="speakText(this)"
+>
+🔊 Speak
+</button>
+
+<span class="time">
+${new Date().toLocaleTimeString([],{
+hour:"2-digit",
+minute:"2-digit"
+})}
+</span>
+
+</div>
+`;
+
+}
+
+chat.appendChild(wrapper);
+
+chat.scrollTop=chat.scrollHeight;
+
+return wrapper;
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(text){
+
+return String(text)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   SPEAK
+========================= */
+
+function speakText(button){
+
+const bubble=button.parentElement;
+
+let text=bubble.innerText;
+
+text=text.replace("🔊 Speak","");
+
+speechSynthesis.cancel();
+
+const voice=new SpeechSynthesisUtterance(text);
+
+voice.pitch=1.15;
+voice.rate=1.05;
+
+speechSynthesis.speak(voice);
+
+}
+
+
+/* =========================
+   QUICK BUTTONS
+========================= */
+
+function quick(text){
+
+inp.value=text;
+
+send();
+
+}
+
+
+/* =========================
+   ASK AI
+========================= */
+
+async function askJonathan(question){
+
+try{
+
+const prompt=
+SYSTEM_PROMPT+
+
+"\n\nUser says:\n"+
+question+
+
+"\n\nRespond as Jonathan AI:";
+
+
+/*
+Puter.js handles the AI request.
+No Pollinations API key is stored in this HTML.
+*/
+
+const response=await puter.ai.chat(
+prompt,
+{
+model:"gpt-5.6-luna",
+temperature:0.7,
+max_tokens:500
+}
+);
+
+
+/*
+Different Puter responses can expose the text
+in slightly different structures.
+*/
+
+if(typeof response==="string"){
+
+return response;
+
+}
+
+if(response && response.message){
+
+if(typeof response.message.content==="string"){
+
+return response.message.content;
+
+}
+
+}
+
+if(response && response.text){
+
+return response.text;
+
+}
+
+if(response && response.content){
+
+return response.content;
+
+}
+
+return "Sorry Boss, I couldn't understand the AI response.";
+
+}catch(error){
+
+console.error(error);
+
+return `
+Jonathan AI couldn't connect to the AI service right now.
+
+Please check your internet connection and try again.
+
+If this is the first time using Jonathan AI, Puter may ask
+you to sign in or authorize the app.
+`;
+
+}
+
+}
+
+
+/* =========================
+   SEND MESSAGE
+========================= */
+
+async function send(){
+
+const text=inp.value.trim();
+
+if(!text)return;
+
+add(text,"user");
+
+inp.value="";
+
+const thinking=add("Thinking...","bot");
+
+try{
+
+const answer=await askJonathan(text);
+
+thinking.remove();
+
+add(answer,"bot");
+
+speak(answer);
+
+}catch(error){
+
+thinking.remove();
+
+add(
+"Sorry Boss ❤️ Something went wrong while connecting to Jonathan AI.",
+"bot"
+);
+
+}
+
+}
+
+
+/* =========================
+   AUTO SPEAK
+========================= */
+
+function speak(text){
+
+speechSynthesis.cancel();
+
+const clean=String(text)
+.replace(/<[^>]*>/g,"")
+.slice(0,700);
+
+const utterance=
+new SpeechSynthesisUtterance(clean);
+
+utterance.pitch=1.15;
+utterance.rate=1.05;
+
+speechSynthesis.speak(utterance);
+
+}
+
+
+/* =========================
+   MICROPHONE
+========================= */
+
+function mic(){
+
+const Recognition=
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+if(!Recognition){
+
+add(
+"Your browser does not support voice recognition. Try Chrome.",
+"bot"
+);
+
+return;
+
+}
+
+const recognition=new Recognition();
+
+recognition.lang="en-US";
+
+recognition.interimResults=false;
+
+recognition.continuous=false;
+
+
+recognition.onstart=function(){
+
+add("🎤 I'm listening, Boss...", "bot");
+
+};
+
+
+recognition.onresult=function(event){
+
+const spoken=
+event.results[0][0].transcript;
+
+inp.value=spoken;
+
+send();
+
+};
+
+
+recognition.onerror=function(){
+
+add(
+"🎤 I couldn't hear you clearly. Please try again.",
+"bot"
+);
+
+};
+
+
+recognition.start();
+
+}
+
+
+/* =========================
+   ENTER KEY
+========================= */
+
+inp.addEventListener("keydown",function(event){
+
+if(event.key==="Enter" && !event.shiftKey){
+
+event.preventDefault();
+
+send();
+
+}
+
+});
+
+
+/* =========================
+   START MESSAGE
+========================= */
+
+add(
+"Hello Boss! 👋❤️ I'm Jonathan AI. I'm ready to listen. Tap 🎤 and speak to me, or type your message.",
+"bot"
+);
+
 </script>
-</body></html>￼Enter
+
+</body>
+ </html>
