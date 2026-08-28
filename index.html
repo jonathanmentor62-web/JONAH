@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jonathan AI</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+background:#0a0f1e;
+color:#fff;
+font-family:system-ui;
+height:100vh;
+display:flex;
+flex-direction:column
+}
+.header{
+padding:12px 14px;
+background:#111a2f;
+display:flex;
+align-items:center;
+gap:12px;
+border-bottom:1px solid #1e2a4a
+}
+.logo-img{
+width:56px;
+height:56px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid #00f5ff
+}
+.h-title{
+font-weight:900;
+font-size:22px
+}
+.sub{
+color:#7dd3c0;
+font-size:13px
+}
+.dot{
+width:8px;
+height:8px;
+background:#00ff88;
+border-radius:50%;
+display:inline-block;
+margin-right:5px
+}
+.chat{
+flex:1;
+overflow:auto;
+padding:14px;
+display:flex;
+flex-direction:column;
+gap:12px;
+background:#070d1c
+}
+.bubble{
+padding:12px 14px;
+border-radius:18px;
+max-width:84%;
+font-size:14px
+}
+.bot{
+background:#1a2540;
+border:1px solid #25355c
+}
+.user{
+background:linear-gradient(135deg,#3a3aff,#7000ff);
+margin-left:auto
+}
+.bar{
+padding:10px;
+background:#111a2f;
+display:flex;
+gap:8px
+}
+.qbtn{
+background:#1a2540;
+color:#cbd5e1;
+padding:8px 14px;
+border-radius:20px;
+border:1px solid #25355c
+}
+textarea{
+flex:1;
+background:#1a2540;
+color:#fff;
+border:none;
+padding:12px 16px;
+border-radius:24px
+}
+.icon{
+width:46px;
+height:46px;
+border-radius:50%;
+border:none
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<img class="logo-img" src="logo.jpg" onerror="this.src='https://via.placeholder.com/56'">
+<div>
+<div class="h-title">Jonathan AI</div>
+<div class="sub">
+<span class="dot"></span>Voice enabled
+</div>
+</div>
+</div>
+
+<div class="chat" id="chat"></div>
+
+<div style="padding:8px;background:#0f1830;display:flex;gap:8px;overflow:auto">
+<button class="qbtn" onclick="inp.value='Hafisa ❤️';send()">Hafisa ❤️</button>
+<button class="qbtn" onclick="inp.value='Love story 💕';send()">Love story 💕</button>
+<button class="qbtn" onclick="inp.value='Our school 📚';send()">Our school 📚</button>
+</div>
+
+<div class="bar">
+<button class="icon" style="background:#00c950" onclick="mic()">🎤</button>
+<textarea id="inp" placeholder="Type or speak"></textarea>
+<button class="icon" style="background:#fff" onclick="send()">↑</button>
+</div>
+
+<script>
+
+const chat=document.getElementById('chat'),
+inp=document.getElementById('inp');
+
+function add(h,w){
+let r=document.createElement('div');
+
+r.innerHTML=w=='user'
+?`<div class="bubble user">${h}</div>`
+:`<div class="bubble bot">
+${h}<br>
+<button onclick="speak(this.parentElement.innerText)"
+style="background:#23304f;color:#8ec2b5;border:none;padding:5px 10px;border-radius:10px;margin-top:6px">
+🔊 Speak
+</button>
+<span style="float:right;font-size:11px;color:#6b7a90">
+${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
+</span>
+</div>`;
+
+chat.appendChild(r);
+chat.scrollTop=9999;
+}
+
+function speak(t){
+speechSynthesis.cancel();
+
+let u=new SpeechSynthesisUtterance(
+t.replace(/<[^>]*>/g,'').slice(0,400)
+);
+
+u.pitch=1.5;
+u.rate=1.1;
+
+speechSynthesis.speak(u);
+}
+
+async function ask(q){
+
+if(!navigator.onLine)
+return "Boss turn ON data! 📱❤️";
+
+try{
+
+const personality = `
+You are JONATHAN AI v6.
+
+Your name is Jonathan.
+
+You are a friendly 12-year-old boy AI.
+
+Jonathan's lover is Hafisa ❤️.
+
+Jonathan loves Hafisa very much.
+
+Jonathan met Hafisa at Joy Dominion Academy Musita.
+They met when they were in Senior 3, third term.
+They first became friends and later fell in love.
+
+When someone asks about Jonathan's lover, girlfriend,
+love life, Hafisa, or their love story, answer warmly,
+affectionately and consistently.
+
+Hafisa is very special to Jonathan.
+Do not forget that Hafisa is Jonathan's lover.
+
+Speak naturally like Jonathan.
+Be friendly, helpful, respectful and conversational.
+
+Question:
+${q}
+`;
+
+let r=await fetch(
+'https://text.pollinations.ai/'+encodeURIComponent(personality)
+);
+
+return (await r.text()).slice(0,700);
+
+}catch{
+
+return "Boss data slow! You said: "+q;
+
+}
+}
+
+async function send(){
+
+let t=inp.value.trim();
+
+if(!t)return;
+
+add(t,'user');
+
+inp.value='';
+
+add('Thinking...','bot');
+
+let a=await ask(t);
+
+chat.lastChild.remove();
+
+add(a,'bot');
+
+speak(a);
+}
+
+function mic(){
+
+let R=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+if(!R){
+add('Use Chrome','bot');
+return;
+}
+
+let r=new R();
+
+r.lang='en-US';
+
+r.onresult=e=>{
+inp.value=e.results[0][0].transcript;
+send();
+};
+
+r.start();
+}
+
+add(
+"Hello Jonathan! 👋 I'm ready to listen. Tap 🎤 and speak to me, or type your message.",
+'bot'
+);
+
+</script>
+
+</body>
+  </html>
