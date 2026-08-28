@@ -75,7 +75,8 @@ padding:12px 14px;
 border-radius:18px;
 max-width:84%;
 font-size:14px;
-line-height:1.5
+line-height:1.5;
+word-wrap:break-word
 }
 
 .bot{
@@ -120,16 +121,8 @@ width:46px;
 height:46px;
 border-radius:50%;
 border:none;
-font-size:20px
-}
-
-.speakBtn{
-background:#23304f;
-color:#8ec2b5;
-border:none;
-padding:5px 10px;
-border-radius:10px;
-margin-top:6px
+font-size:20px;
+flex-shrink:0
 }
 
 .time{
@@ -138,6 +131,11 @@ font-size:11px;
 color:#6b7a90;
 margin-top:10px
 }
+
+.listening{
+background:#ff1744 !important;
+}
+
 </style>
 </head>
 
@@ -159,7 +157,7 @@ Jonathan AI
 
 <div class="sub">
 <span class="dot"></span>
-Voice enabled
+Voice input • Text responses
 </div>
 
 </div>
@@ -202,6 +200,7 @@ Our school 📚
 <div class="bar">
 
 <button
+id="micButton"
 class="icon"
 style="background:#00c950"
 onclick="mic()">
@@ -211,8 +210,8 @@ onclick="mic()">
 <textarea
 id="inp"
 rows="1"
-placeholder="Type or speak"
-></textarea>
+placeholder="Type or speak">
+</textarea>
 
 <button
 class="icon"
@@ -228,6 +227,7 @@ onclick="send()">
 
 const chat = document.getElementById("chat");
 const inp = document.getElementById("inp");
+const micButton = document.getElementById("micButton");
 
 
 /* =========================
@@ -242,7 +242,7 @@ Your name is Jonathan.
 
 You are a friendly, intelligent and helpful boy AI.
 
-You speak naturally and conversationally.
+You communicate naturally and conversationally.
 
 Jonathan's lover is Hafisa ❤️.
 
@@ -284,6 +284,11 @@ The user may type or speak.
 
 Always answer the user's actual question.
 
+IMPORTANT:
+Jonathan communicates using TEXT ONLY.
+Never produce or request audio.
+Never speak the response aloud.
+
 `;
 
 
@@ -295,43 +300,29 @@ function add(text,type){
 
 const wrapper=document.createElement("div");
 
-if(type==="user"){
+const bubble=document.createElement("div");
 
-wrapper.innerHTML=
-`
-<div class="bubble user">
-${escapeHTML(text)}
-</div>
-`;
+bubble.className="bubble "+type;
 
-}else{
+bubble.textContent=text;
 
-const safeText=escapeHTML(text);
+wrapper.appendChild(bubble);
 
-wrapper.innerHTML=
-`
-<div class="bubble bot">
 
-<div>
-${safeText.replace(/\n/g,"<br>")}
-</div>
+/* Time */
 
-<button
-class="speakBtn"
-onclick="speakText(this)"
->
-🔊 Speak
-</button>
+if(type==="bot"){
 
-<span class="time">
-${new Date().toLocaleTimeString([],{
+const time=document.createElement("span");
+
+time.className="time";
+
+time.textContent=new Date().toLocaleTimeString([],{
 hour:"2-digit",
 minute:"2-digit"
-})}
-</span>
+});
 
-</div>
-`;
+bubble.appendChild(time);
 
 }
 
@@ -340,46 +331,6 @@ chat.appendChild(wrapper);
 chat.scrollTop=chat.scrollHeight;
 
 return wrapper;
-}
-
-
-/* =========================
-   ESCAPE HTML
-========================= */
-
-function escapeHTML(text){
-
-return String(text)
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
-
-}
-
-
-/* =========================
-   SPEAK
-========================= */
-
-function speakText(button){
-
-const bubble=button.parentElement;
-
-let text=bubble.innerText;
-
-text=text.replace("🔊 Speak","");
-
-speechSynthesis.cancel();
-
-const voice=new SpeechSynthesisUtterance(text);
-
-voice.pitch=1.15;
-voice.rate=1.05;
-
-speechSynthesis.speak(voice);
-
 }
 
 
@@ -397,7 +348,7 @@ send();
 
 
 /* =========================
-   ASK AI
+   ASK JONATHAN
 ========================= */
 
 async function askJonathan(question){
@@ -406,17 +357,10 @@ try{
 
 const prompt=
 SYSTEM_PROMPT+
-
 "\n\nUser says:\n"+
 question+
-
 "\n\nRespond as Jonathan AI:";
 
-
-/*
-Puter.js handles the AI request.
-No Pollinations API key is stored in this HTML.
-*/
 
 const response=await puter.ai.chat(
 prompt,
@@ -428,38 +372,29 @@ max_tokens:500
 );
 
 
-/*
-Different Puter responses can expose the text
-in slightly different structures.
-*/
-
 if(typeof response==="string"){
-
 return response;
-
 }
+
 
 if(response && response.message){
 
 if(typeof response.message.content==="string"){
-
 return response.message.content;
-
 }
 
 }
+
 
 if(response && response.text){
-
 return response.text;
-
 }
+
 
 if(response && response.content){
-
 return response.content;
-
 }
+
 
 return "Sorry Boss, I couldn't understand the AI response.";
 
@@ -491,11 +426,17 @@ const text=inp.value.trim();
 
 if(!text)return;
 
+
 add(text,"user");
 
 inp.value="";
 
-const thinking=add("Thinking...","bot");
+
+const thinking=add(
+"Thinking...",
+"bot"
+);
+
 
 try{
 
@@ -505,7 +446,15 @@ thinking.remove();
 
 add(answer,"bot");
 
-speak(answer);
+
+/*
+IMPORTANT:
+
+There is NO speechSynthesis.speak().
+Jonathan does NOT speak.
+Jonathan only displays text.
+*/
+
 
 }catch(error){
 
@@ -522,31 +471,12 @@ add(
 
 
 /* =========================
-   AUTO SPEAK
-========================= */
-
-function speak(text){
-
-speechSynthesis.cancel();
-
-const clean=String(text)
-.replace(/<[^>]*>/g,"")
-.slice(0,700);
-
-const utterance=
-new SpeechSynthesisUtterance(clean);
-
-utterance.pitch=1.15;
-utterance.rate=1.05;
-
-speechSynthesis.speak(utterance);
-
-}
-
-
-/* =========================
    MICROPHONE
 ========================= */
+
+let recognition=null;
+let listening=false;
+
 
 function mic(){
 
@@ -554,10 +484,11 @@ const Recognition=
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
 
+
 if(!Recognition){
 
 add(
-"Your browser does not support voice recognition. Try Chrome.",
+"Voice input isn't supported on this device. Try Chrome.",
 "bot"
 );
 
@@ -565,7 +496,19 @@ return;
 
 }
 
-const recognition=new Recognition();
+
+/* Stop listening if already active */
+
+if(listening){
+
+recognition.stop();
+
+return;
+
+}
+
+
+recognition=new Recognition();
 
 recognition.lang="en-US";
 
@@ -576,7 +519,11 @@ recognition.continuous=false;
 
 recognition.onstart=function(){
 
-add("🎤 I'm listening, Boss...", "bot");
+listening=true;
+
+micButton.classList.add("listening");
+
+micButton.textContent="⏹";
 
 };
 
@@ -586,19 +533,53 @@ recognition.onresult=function(event){
 const spoken=
 event.results[0][0].transcript;
 
+
+/*
+Put the user's spoken words into
+the text box.
+*/
+
 inp.value=spoken;
+
+
+/*
+Send the recognized text to Jonathan.
+Jonathan responds with TEXT ONLY.
+*/
 
 send();
 
 };
 
 
-recognition.onerror=function(){
+recognition.onerror=function(event){
+
+console.log(
+"Speech recognition error:",
+event.error
+);
+
+listening=false;
+
+micButton.classList.remove("listening");
+
+micButton.textContent="🎤";
 
 add(
 "🎤 I couldn't hear you clearly. Please try again.",
 "bot"
 );
+
+};
+
+
+recognition.onend=function(){
+
+listening=false;
+
+micButton.classList.remove("listening");
+
+micButton.textContent="🎤";
 
 };
 
@@ -612,9 +593,14 @@ recognition.start();
    ENTER KEY
 ========================= */
 
-inp.addEventListener("keydown",function(event){
+inp.addEventListener(
+"keydown",
+function(event){
 
-if(event.key==="Enter" && !event.shiftKey){
+if(
+event.key==="Enter" &&
+!event.shiftKey
+){
 
 event.preventDefault();
 
@@ -630,11 +616,27 @@ send();
 ========================= */
 
 add(
-"Hello Boss! 👋❤️ I'm Jonathan AI. I'm ready to listen. Tap 🎤 and speak to me, or type your message.",
+"Hello Boss! 👋❤️ I'm Jonathan AI. You can type to me or tap 🎤 and speak. I will listen to your voice and reply with text only.",
 "bot"
 );
+
+
+/* =========================
+   EXTRA SAFETY
+========================= */
+
+/*
+Make sure any speech that may have been
+left over from an earlier version is stopped.
+*/
+
+if("speechSynthesis" in window){
+
+window.speechSynthesis.cancel();
+
+}
 
 </script>
 
 </body>
- </html>
+   </html>
