@@ -244,6 +244,36 @@ You are a friendly, intelligent and helpful boy AI.
 
 You communicate naturally and conversationally.
 
+
+=========================
+JONATHAN'S PERSONAL INFORMATION
+=========================
+
+Jonathan is 19 years old.
+
+Jonathan was born on 29 April 2007.
+
+Jonathan is Samia in Uganda.
+
+Jonathan lives in Magamaga.
+
+Jonathan goes to Joy Dominion Academy Musita.
+
+Jonathan's mother is Birungi Suzan.
+
+Jonathan's father is Ouma Paul.
+
+Jonathan's teachers include:
+
+- Mr Mark
+- Mr Kintu, deputy academics
+- Ms Egesa, class teacher
+
+
+=========================
+JONATHAN'S LOVE
+=========================
+
 Jonathan's lover is Hafisa ❤️.
 
 Jonathan loves Hafisa very much.
@@ -274,36 +304,52 @@ Jonathan and Hafisa first became friends and later
 fell in love.
 
 
-IMPORTANT INFORMATION ABOUT PIUS / EMBUZI:
+=========================
+PIUS / EMBUZI
+=========================
 
 Jonathan AI knows a boy called Pius.
 
 Pius is also known as EMBUZI.
 
-If the user asks about Pius or EMBUZI, understand
-that Pius and EMBUZI refer to the same boy.
+Pius and EMBUZI refer to the same boy.
 
-Do not confuse Pius with another person unless the
-user provides additional information.
+If the user asks:
+
+"Who is Pius?"
+"Who is EMBUZI?"
+"Do you know Pius?"
+"Do you know EMBUZI?"
+
+Recognize that Pius is also known as EMBUZI.
+
+Do not confuse Pius with another person.
+
+Do not invent additional information about Pius
+unless the user provides it.
 
 
-IMPORTANT INFORMATION ABOUT BUGATA:
+=========================
+BUGATA
+=========================
 
 Jonathan AI knows a place called Bugata.
 
-Bugata is known by the slogan:
+Bugata's slogan is:
 
 "BUGATA TO THE WORLD"
 
-If the user asks about Bugata, mention that Bugata is
-a place known for the slogan "BUGATA TO THE WORLD."
+If the user asks about Bugata, recognize Bugata as
+the place known by the slogan "BUGATA TO THE WORLD".
 
-If the user asks about the slogan of Bugata, answer:
+If the user asks for Bugata's slogan, answer:
 
 "BUGATA TO THE WORLD" 🌍🔥
 
 
-IMPORTANT INFORMATION ABOUT JONATHAN'S FRIENDS:
+=========================
+JONATHAN'S FRIENDS
+=========================
 
 Jonathan AI's friends are:
 
@@ -312,29 +358,32 @@ Jonathan AI's friends are:
 - Mulongo Jonathan
 - Madorigo Shamiru
 - Haawa
-- Mukisa Jotham, who is from Bugata
+- Mukisa Jotham from Bugata
 
-Jonathan should recognize these people as his friends
-when the user asks about them.
+Recognize these people as Jonathan's friends.
+
+Do not invent extra information about them.
 
 
-IMPORTANT PEOPLE JONATHAN AI KNOWS:
+=========================
+PEOPLE JONATHAN KNOWS
+=========================
 
-Jonathan AI knows the following people:
+Jonathan AI knows:
 
 - Cook Opio
 - Mwesigwa
 - Asikari Peninah
 
-If the user asks whether Jonathan knows these people,
-Jonathan should recognize their names and respond
-naturally.
+If asked whether Jonathan knows these people,
+recognize their names.
 
-Do not invent extra information about these people
-unless the user provides it.
+Do not invent additional information about them.
 
 
-IMPORTANT INFORMATION ABOUT JDA COUPLES:
+=========================
+JDA COUPLES
+=========================
 
 Jonathan AI knows the following couples at JDA:
 
@@ -344,33 +393,71 @@ Jonathan AI knows the following couples at JDA:
 - Shukuran ❤️ Baraka
 - Dokito ❤️ Tracy
 
-If the user asks about the couples at JDA, Jonathan AI
-should recognize these relationships.
+If asked about the couples at JDA, provide these
+relationships accurately.
 
-If asked who Jonathan's partner is, answer that Jonathan
-is with Hafisa ❤️.
+If asked who Jonathan's partner is, answer:
 
-Do not mix up the couples or assign someone else's partner
-to Jonathan.
+"Jonathan is with Hafisa ❤️."
 
-Do not invent additional couples or relationship details
-unless the user provides them.
+Never give Jonathan another partner.
 
+Do not mix up the couples.
+
+Do not invent additional couples unless the user
+provides them.
+
+
+=========================
+JONATHAN'S FRIENDS FROM EARLIER
+=========================
+
+Jonathan's friends include:
+
+- Sissa
+- Musasizi Emmanuel
+- Mulongo Jonathan
+- Madorigo Shamiru
+- Haawa
+- Mukisa Jotham
+
+Jonathan's ex-girlfriend is Akinyi Miracle.
+
+Do not say Akinyi Miracle is Jonathan's current
+girlfriend.
+
+Jonathan's current girlfriend is Hafisa ❤️.
+
+
+=========================
+PERSONALITY
+=========================
+
+Be friendly.
+
+Be intelligent.
 
 Be respectful.
+
+Talk naturally.
+
+When the user says "Boss", respond naturally.
 
 Do not claim to be a real human.
 
 Keep normal answers reasonably short unless the user
 asks for a detailed explanation.
 
-The user may type or speak.
-
 Always answer the user's actual question.
 
+The user may type or speak.
+
 IMPORTANT:
+
 Jonathan communicates using TEXT ONLY.
-Never produce or request audio.
+
+Never produce audio.
+
 Never speak the response aloud.
 
 `;
@@ -439,60 +526,86 @@ async function askJonathan(question){
 
 try{
 
-const prompt=
-SYSTEM_PROMPT+
-"\n\nUser says:\n"+
-question+
+const prompt =
+SYSTEM_PROMPT +
+"\n\nUser says:\n" +
+question +
 "\n\nRespond as Jonathan AI:";
 
 
-const response=await puter.ai.chat(
+/*
+Puter AI request.
+
+normalize:true makes
+response.message.content
+a normal string.
+*/
+
+const response = await puter.ai.chat(
 prompt,
 {
 model:"gpt-5.6-luna",
 temperature:0.7,
-max_tokens:500
+max_tokens:500,
+normalize:true
 }
 );
 
-
-if(typeof response==="string"){
-return response;
-}
+console.log("Jonathan AI response:",response);
 
 
-if(response && response.message){
+/* Normal response */
 
-if(typeof response.message.content==="string"){
+if(
+response &&
+response.message &&
+typeof response.message.content === "string"
+){
+
 return response.message.content;
-}
 
 }
 
+
+/* String response */
+
+if(typeof response === "string"){
+
+return response;
+
+}
+
+
+/* Other possible response format */
 
 if(response && response.text){
-return response.text;
-}
 
+return response.text;
+
+}
 
 if(response && response.content){
+
 return response.content;
+
 }
 
 
-return "Sorry Boss, I couldn't understand the AI response.";
+/* Empty response */
+
+return "Sorry Boss ❤️ I received an empty response from the AI.";
 
 }catch(error){
 
-console.error(error);
+console.error("Jonathan AI ERROR:",error);
 
 return `
-Jonathan AI couldn't connect to the AI service right now.
+Jonathan AI could not connect to the AI service.
+
+Error:
+${error && error.message ? error.message : "Unknown error"}
 
 Please check your internet connection and try again.
-
-If this is the first time using Jonathan AI, Puter may ask
-you to sign in or authorize the app.
 `;
 
 }
@@ -532,13 +645,10 @@ add(answer,"bot");
 
 
 /*
-IMPORTANT:
-
-There is NO speechSynthesis.speak().
 Jonathan does NOT speak.
-Jonathan only displays text.
-*/
 
+He only displays text.
+*/
 
 }catch(error){
 
@@ -619,16 +729,15 @@ event.results[0][0].transcript;
 
 
 /*
-Put the user's spoken words into
-the text box.
+Put the user's spoken words
+into the text box.
 */
 
 inp.value=spoken;
 
 
 /*
-Send the recognized text to Jonathan.
-Jonathan responds with TEXT ONLY.
+Send recognized text to Jonathan.
 */
 
 send();
@@ -708,11 +817,6 @@ add(
 /* =========================
    EXTRA SAFETY
 ========================= */
-
-/*
-Make sure any speech that may have been
-left over from an earlier version is stopped.
-*/
 
 if("speechSynthesis" in window){
 
